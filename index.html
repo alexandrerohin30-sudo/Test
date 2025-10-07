@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GiftDrop.ru — бесплатные кейсы CS2, ежедневные дропы, рефералы и виртуальные скины. Зарабатывай скины без вложений!">
+    <meta name="keywords" content="CS2 кейсы, подарки, бесплатные скины, GiftDrop, дропы, рефералка">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>GiftDrop.ru — Открывай кейсы бесплатно и зарабатывай скины</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="close-btn">×</div>
+            <div class="header-title">Gift Drop</div>
+        </div>
+        <div class="header-right">
+            <div class="deposit-btn">
+                <span>+</span>
+                <span>Deposit</span>
+            </div>
+            <div class="profile-img">U</div>
+        </div>
+    </div>
+    
+    <div class="section-title">Free cases</div>
+    <div class="update-info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span>Updated in <span class="timer">03:25:47</span></span>
+    </div>
+    
+    <div class="cases-container">
+        <div class="case-item">
+            <img class="case-image" src="assets/Promo.png" alt="Promocode Box">
+            <div class="case-name">Promocode Box</div>
+            <a href="/case.html?name=promocode" class="open-btn">Open for free</a>
+        </div>
+        <div class="case-item">
+            <img class="case-image" src="assets/Daily.png" alt="Daily">
+            <div class="case-name">Daily</div>
+            <button class="open-btn">Open for free</button>
+        </div>
+    </div>
+    
+    <div class="section-title">Deposit cases</div>
+    
+    <div class="cases-container">
+        <div class="case-item">
+            <img class="case-image" src="assets/1K.png" alt="Deposit 1000">
+            <div class="case-name">Deposit <span class="highlighted">1000</span></div>
+            <div class="deposit-count">
+                <span>0</span>
+                <div class="coin-icon">💎</div>
+            </div>
+        </div>
+        <div class="case-item">
+            <img class="case-image" src="https://placehold.co/300x200/ffd700/000000?text=Deposit+2K" alt="Deposit 2000">
+            <div class="case-name">Deposit <span class="highlighted">2000</span></div>
+            <div class="deposit-count">
+                <span>0</span>
+                <div class="coin-icon">💎</div>
+            </div>
+        </div>
+        <div class="case-item">
+            <img class="case-image" src="https://placehold.co/300x200/ff4500/ffffff?text=Deposit+5K" alt="Deposit 5000">
+            <div class="case-name">Deposit <span class="highlighted">5000</span></div>
+            <div class="deposit-count">
+                <span>0</span>
+                <div class="coin-icon">💎</div>
+            </div>
+        </div>
+        <div class="case-item">
+            <img class="case-image" src="https://placehold.co/300x200/00bfff/ffffff?text=Deposit+10K" alt="Deposit 10000">
+            <div class="case-name">Deposit <span class="highlighted">10000</span></div>
+            <div class="deposit-count">
+                <span>0</span>
+                <div class="coin-icon">💎</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="live-drops">
+        <div class="section-title">🔥 LIVE Drops</div>
+        <div id="live-drops-list" class="live-drops-list">
+            <div class="live-drop">⏳ Ждем первых дропов...</div>
+        </div>
+    </div>
+    
+    <div class="referral-section">
+        <div class="section-title">Referral cases</div>
+        <div class="cases-container">
+            <div class="case-item">
+                <img class="case-image" src="https://placehold.co/300x200/8a2be2/ffffff?text=Referral+Case" alt="Referral Case">
+                <div class="case-name">Referral Case</div>
+                <div class="deposit-count">
+                    <span>0</span>
+                    <div class="coin-icon">💎</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="nav-bar">
+        <div class="nav-item active">
+            <div class="nav-icon">🎁</div>
+            <div class="nav-text">Cases</div>
+        </div>
+        <div class="nav-item" onclick="window.location.href='/games.html'">
+            <div class="nav-icon">🎮</div>
+            <div class="nav-text">Games</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-text">Exercises</div>
+        </div>
+    </div>
+
+    <script>
+        // Подключение SSE для LIVE-дропов
+        const eventSource = new EventSource('/api/live-drops.php');
+        eventSource.onmessage = function(e) {
+            const drop = JSON.parse(e.data);
+            const liveList = document.getElementById('live-drops-list');
+            const dropElement = document.createElement('div');
+            dropElement.className = 'live-drop';
+            dropElement.innerHTML = `
+                <strong>${drop.user}</strong> открыл <strong>${drop.case}</strong> и выиграл <strong>${drop.item}</strong> (${drop.value}$)
+            `;
+            liveList.insertBefore(dropElement, liveList.firstChild);
+            if (liveList.children.length > 10) liveList.removeChild(liveList.lastChild);
+        };
+        eventSource.onerror = function() {
+            document.getElementById('live-drops-list').innerHTML = 
+                '<div class="live-drop">❌ Ошибка соединения с сервером</div>';
+        };
+
+        // Виртуальный баланс при открытии кейсов
+        let balance = 0;
+        document.querySelectorAll('.open-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const caseName = btn.parentElement.querySelector('.case-name').textContent;
+                let reward = 0;
+                if (caseName === 'Promocode Box') reward = 50;
+                if (caseName === 'Daily') reward = 30;
+                balance += reward;
+                document.querySelector('.profile-img').textContent = '💎 ' + Math.floor(balance);
+
+                const popup = document.createElement('div');
+                popup.textContent = `+${reward}💎`;
+                popup.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: linear-gradient(90deg, #ffd700, #ff4500);
+                    color: #000;
+                    padding: 15px 25px;
+                    border-radius: 20px;
+                    font-weight: bold;
+                    font-size: 20px;
+                    z-index: 1000;
+                    box-shadow: 0 10px 30px rgba(255, 69, 0, 0.6);
+                    animation: pop 1s ease-out;
+                `;
+                document.body.appendChild(popup);
+                setTimeout(() => popup.remove(), 1000);
+            });
+        });
+        
+    </script>
+    <!-- Модальное окно профиля -->
+<div id="profile-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <div class="profile-header-modal">
+            <div class="profile-avatar">👤</div>
+            <h3 id="modal-username">Анонимный пользователь</h3>
+            <p id="modal-refcode">Ваш реферальный код: <strong id="modal-ref-code">-----</strong></p>
+            <div class="profile-balance">
+                <span>Баланс:</span>
+                <strong id="modal-balance">0</strong> 💎
+            </div>
+        </div>
+
+        <div class="modal-tabs">
+            <button class="modal-tab-btn active" data-tab="overview">Обзор</button>
+            <button class="modal-tab-btn" data-tab="history">История</button>
+            <button class="modal-tab-btn" data-tab="referrals">Рефералы</button>
+            <button class="modal-tab-btn" data-tab="achievements">Достижения</button>
+        </div>
+
+        <div class="modal-tab-content active" id="modal-tab-overview">
+            <div class="modal-stats-grid">
+                <div class="stat-item">
+                    <span>Открыто кейсов</span>
+                    <strong id="modal-stat-opened">0</strong>
+                </div>
+                <div class="stat-item">
+                    <span>Выиграно</span>
+                    <strong id="modal-stat-won">0</strong> 💎
+                </div>
+                <div class="stat-item">
+                    <span>Рефералов</span>
+                    <strong id="modal-stat-referrals">0</strong>
+                </div>
+                <div class="stat-item">
+                    <span>Достижений</span>
+                    <strong id="modal-stat-achievements">0</strong>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="modal-daily-bonus-btn" id="modal-daily-bonus-btn">Получить бонус</button>
+                <p id="modal-daily-bonus-timer" style="color: #aaa; margin-top: 10px;">⏳ Следующий бонус через: 23:59:59</p>
+            </div>
+        </div>
+
+        <div class="modal-tab-content" id="modal-tab-history">
+            <h4>📜 История открытий</h4>
+            <div id="modal-history-list" class="history-list">
+                <p style="color: #aaa; text-align: center;">Нет истории — откройте первый кейс!</p>
+            </div>
+        </div>
+
+        <div class="modal-tab-content" id="modal-tab-referrals">
+            <h4>🤝 Реферальная система</h4>
+            <p>Приглашайте друзей — получайте <strong>10% от их пополнений</strong>!</p>
+            <div class="referral-box">
+                <input type="text" id="modal-ref-link" value="https://giftdrop.ru?ref=-----" readonly>
+                <button class="copy-btn" onclick="copyToClipboard('#modal-ref-link')">Копировать</button>
+            </div>
+            <div class="referral-stats">
+                <p>Привлечено: <strong id="modal-ref-count">0</strong> пользователей</p>
+                <p>Заработано: <strong id="modal-ref-earnings">0</strong> 💎</p>
+            </div>
+            <div class="referral-list" id="modal-referral-list">
+                <p style="color: #aaa; text-align: center;">Пока нет приглашённых</p>
+            </div>
+        </div>
+
+        <div class="modal-tab-content" id="modal-tab-achievements">
+            <h4>🏆 Достижения</h4>
+            <div class="achievements-grid" id="modal-achievements-grid">
+                <!-- Заполняется JS -->
+            </div>
+            <p style="color: #aaa; margin-top: 20px; text-align: center;">Получите все — и станьте легендой!</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="logout-btn-modal" onclick="logout()">Выйти</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    overflow-y: auto;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #1a1a1a, #222222);
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 15px 40px rgba(255, 69, 0, 0.5);
+    position: relative;
+    color: #fff;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #ff4500;
+}
+
+.profile-header-modal {
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
+
+.profile-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #ff4500, #007bff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 12px;
+    box-shadow: 0 0 15px rgba(255, 69, 0, 0.3);
+}
+
+.profile-header-modal h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.profile-header-modal p {
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 8px;
+}
+
+.profile-balance {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ff4500;
+}
+
+.modal-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.modal-tab-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #ccc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-tab-btn.active {
+    background: linear-gradient(90deg, #ff4500, #ff8c00);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 69, 0, 0.4);
+}
+
+.modal-tab-content {
+    display: none;
+    padding: 15px 0;
+}
+
+.modal-tab-content.active {
+    display: block;
+}
+
+.modal-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.stat-item {
+    background: rgba(0,0,0,0.3);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-item span {
+    font-size: 12px;
+    color: #aaa;
+}
+
+.stat-item strong {
+    font-size: 16px;
+    color: #fff;
+}
+
+.modal-daily-bonus-btn {
+    background: linear-gradient(90deg, #8a2be2, #9370db);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.modal-daily-bonus-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.modal-daily-bonus-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.modal-ref-link {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 13px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.copy-btn {
+    background: linear-gradient(90deg, #ff4500, #ff8c00);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+
+.referral-stats {
+    margin: 10px 0;
+    color: #fff;
+    font-size: 13px;
+}
+
+.referral-list {
+    max-height: 120px;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding: 8px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.achievement-item {
+    background: rgba(255,255,255,0.08);
+    padding: 12px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    border: 1px solid #333;
+}
+
+.achievement-icon {
+    font-size: 20px;
+}
+
+.achievement-info strong {
+    color: #fff;
+}
+
+.achievement-info small {
+    color: #aaa;
+    font-size: 11px;
+}
+
+.achievement-badge {
+    margin-left: auto;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    background: rgba(255, 69, 0, 0.2);
+    color: #ff4500;
+}
+
+.achievement-badge.achieved {
+    background: rgba(40, 167, 69, 0.3);
+    color: #28a745;
+}
+
+.logout-btn-modal {
+    background: linear-gradient(90deg, #ff4500, #ff8c00);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 25px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    width: 100%;
+    font-size: 14px;
+}
+
+/* Анимация появления */
+.modal-content {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+// Функция открытия модального окна
+function openProfileModal() {
+    document.getElementById('profile-modal').style.display = 'block';
+    loadProfileData();
+}
+
+// Функция закрытия модального окна
+function closeProfileModal() {
+    document.getElementById('profile-modal').style.display = 'none';
+}
+
+// Загрузка данных профиля
+function loadProfileData() {
+    const user = JSON.parse(localStorage.getItem('giftdrop_user') || '{}');
+    const balance = parseInt(localStorage.getItem('giftdrop_balance') || '0');
+    const history = JSON.parse(localStorage.getItem('giftdrop_history') || '[]');
+    const referrals = JSON.parse(localStorage.getItem('giftdrop_referrals') || '[]');
+    const achievements = JSON.parse(localStorage.getItem('giftdrop_achievements') || '[]');
+    const dailyBonus = localStorage.getItem('giftdrop_daily_bonus') || null;
+
+    // Обновляем данные в модалке
+    document.getElementById('modal-username').textContent = user.username || 'Аноним';
+    document.getElementById('modal-ref-code').textContent = user.ref_code || '-----';
+    document.getElementById('modal-balance').textContent = balance;
+    document.getElementById('modal-ref-link').value = `https://giftdrop.ru?ref=${user.ref_code || '-----'}`;
+
+    // Статистика
+    document.getElementById('modal-stat-opened').textContent = history.length;
+    document.getElementById('modal-stat-won').textContent = history.reduce((sum, h) => sum + h.value, 0);
+    document.getElementById('modal-ref-count').textContent = referrals.length;
+    document.getElementById('modal-ref-earnings').textContent = referrals.reduce((sum, r) => sum + r.earnings, 0);
+    document.getElementById('modal-stat-referrals').textContent = referrals.length;
+    document.getElementById('modal-stat-achievements').textContent = achievements.length;
+
+    // История
+    const historyList = document.getElementById('modal-history-list');
+    if (history.length > 0) {
+        historyList.innerHTML = '';
+        history.slice(-10).reverse().forEach(h => {
+            const el = document.createElement('div');
+            el.className = 'history-item';
+            el.innerHTML = `
+                <span class="history-time">${new Date(h.time).toLocaleTimeString()}</span>
+                <span class="history-case">${h.case}</span>
+                <span class="history-value">+${h.value}💎</span>
+            `;
+            historyList.appendChild(el);
+        });
+    } else {
+        historyList.innerHTML = '<p style="color: #aaa; text-align: center;">Нет истории — откройте первый кейс!</p>';
+    }
+
+    // Рефералы
+    const referralList = document.getElementById('modal-referral-list');
+    if (referrals.length > 0) {
+        referralList.innerHTML = '';
+        referrals.forEach(r => {
+            const el = document.createElement('div');
+            el.className = 'referral-item';
+            el.innerHTML = `
+                <span>${r.username}</span>
+                <span>+${r.earnings}💎</span>
+            `;
+            referralList.appendChild(el);
+        });
+    } else {
+        referralList.innerHTML = '<p style="color: #aaa; text-align: center;">Пока нет приглашённых</p>';
+    }
+
+    // Достижения
+    const achievementsGrid = document.getElementById('modal-achievements-grid');
+    achievementsGrid.innerHTML = '';
+    const achievementsData = [
+        { id: 'open10', name: 'Новичок', desc: 'Открыл 10 кейсов', icon: '🎖️' },
+        { id: 'open50', name: 'Энтузиаст', desc: 'Открыл 50 кейсов', icon: '🔥' },
+        { id: 'open100', name: 'Профи', desc: 'Открыл 100 кейсов', icon: '🏆' },
+        { id: 'win1000', name: 'Богач', desc: 'Выиграл 1000💎', icon: '💎' },
+        { id: 'ref1', name: 'Пригласил', desc: 'Пригласил 1 друга', icon: '🤝' },
+        { id: 'ref5', name: 'Тимлид', desc: 'Пригласил 5 друзей', icon: '👥' },
+        { id: 'daily7', name: 'Постоялец', desc: 'Получал бонус 7 дней подряд', icon: '📅' },
+        { id: 'all', name: 'Легенда', desc: 'Получил все достижения', icon: '✨' }
+    ];
+
+    achievementsData.forEach(a => {
+        const achieved = achievements.includes(a.id);
+        const el = document.createElement('div');
+        el.className = 'achievement-item';
+        el.innerHTML = `
+            <div class="achievement-icon">${a.icon}</div>
+            <div class="achievement-info">
+                <strong>${a.name}</strong>
+                <small>${a.desc}</small>
+            </div>
+            <div class="achievement-badge ${achieved ? 'achieved' : ''}">
+                ${achieved ? '✔️' : '🔒'}
+            </div>
+        `;
+        achievementsGrid.appendChild(el);
+    });
+
+    // Ежедневный бонус
+    const dailyBonusBtn = document.getElementById('modal-daily-bonus-btn');
+    const dailyBonusTimer = document.getElementById('modal-daily-bonus-timer');
+
+    function updateDailyBonusTimer() {
+        if (!dailyBonus) {
+            dailyBonusBtn.disabled = false;
+            dailyBonusBtn.textContent = 'Получить бонус';
+            dailyBonusTimer.textContent = '⏳ Следующий бонус через: 23:59:59';
+            return;
+        }
+
+        const last = new Date(dailyBonus);
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+
+        const diffMs = tomorrow - now;
+        const hours = Math.floor(diffMs / 3600000);
+        const minutes = Math.floor((diffMs % 3600000) / 60000);
+        const seconds = Math.floor((diffMs % 60000) / 1000);
+
+        dailyBonusTimer.textContent = `⏳ Следующий бонус через: ${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+        dailyBonusBtn.disabled = true;
+        dailyBonusBtn.textContent = 'Бонус уже получен!';
+    }
+
+    updateDailyBonusTimer();
+    setInterval(updateDailyBonusTimer, 1000);
+
+    dailyBonusBtn.addEventListener('click', () => {
+        if (dailyBonus) return;
+        const now = new Date().toISOString();
+        localStorage.setItem('giftdrop_daily_bonus', now);
+        balance += 100;
+        localStorage.setItem('giftdrop_balance', balance);
+        document.getElementById('modal-balance').textContent = balance;
+        document.getElementById('modal-stat-won').textContent = parseInt(document.getElementById('modal-stat-won').textContent) + 100;
+        achievements.push('daily7');
+        localStorage.setItem('giftdrop_achievements', JSON.stringify([...new Set(achievements)]));
+        alert('🎉 Вы получили 100💎 за ежедневный бонус!');
+        updateDailyBonusTimer();
+    });
+
+    // Вкладки
+    document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(`modal-tab-${btn.dataset.tab}`).classList.add('active');
+        });
+    });
+
+    // Копирование ссылки
+    window.copyToClipboard = function(selector) {
+        const el = document.querySelector(selector);
+        el.select();
+        document.execCommand('copy');
+        alert('🔗 Ссылка скопирована!');
+    };
+}
+
+// Обработка кликов
+document.querySelector('.profile-img').addEventListener('click', openProfileModal);
+
+// Закрытие по крестику
+document.querySelector('.close-btn').addEventListener('click', closeProfileModal);
+
+// Закрытие по клику вне модалки
+window.addEventListener('click', (e) => {
+    const modal = document.getElementById('profile-modal');
+    if (e.target === modal) {
+        closeProfileModal();
+    }
+});
+
+// При входе — автоматически загружать данные
+if (localStorage.getItem('giftdrop_user')) {
+    loadProfileData();
+}
+
+// Выход
+function logout() {
+    localStorage.removeItem('giftdrop_user');
+    localStorage.removeItem('giftdrop_balance');
+    localStorage.removeItem('giftdrop_history');
+    localStorage.removeItem('giftdrop_referrals');
+    localStorage.removeItem('giftdrop_achievements');
+    localStorage.removeItem('giftdrop_daily_bonus');
+    closeProfileModal();
+    // Можно перенаправить на главную, если нужно
+    // window.location.href = '/';
+}
+</script>
+</body>
+</html>

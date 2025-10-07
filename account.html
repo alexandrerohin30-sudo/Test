@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Профиль на GiftDrop.ru — история открытий, рефералы, достижения и вывод баланса.">
+    <meta name="keywords" content="GiftDrop профиль, история кейсов, рефералка, вывод баланса">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>Профиль — GiftDrop.ru</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="close-btn">×</div>
+            <div class="header-title">Gift Drop</div>
+        </div>
+        <div class="header-right">
+            <div class="deposit-btn">
+                <span>+</span>
+                <span>Deposit</span>
+            </div>
+            <div class="profile-img">U</div>
+        </div>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar">👤</div>
+            <h2 id="profile-username">Анонимный пользователь</h2>
+            <p id="profile-refcode">Ваш реферальный код: <strong id="ref-code">-----</strong></p>
+            <div class="profile-balance">
+                <span>Баланс:</span>
+                <strong id="profile-balance">0</strong> 💎
+            </div>
+        </div>
+
+        <div class="profile-tabs">
+            <button class="tab-btn active" data-tab="overview">Обзор</button>
+            <button class="tab-btn" data-tab="history">История</button>
+            <button class="tab-btn" data-tab="referrals">Рефералы</button>
+            <button class="tab-btn" data-tab="achievements">Достижения</button>
+            <button class="tab-btn" data-tab="settings">Настройки</button>
+        </div>
+
+        <div class="tab-content active" id="tab-overview">
+            <div class="profile-section">
+                <h3>📊 Ваша статистика</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span>Открыто кейсов</span>
+                        <strong id="stat-opened">0</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Выиграно</span>
+                        <strong id="stat-won">0</strong> 💎
+                    </div>
+                    <div class="stat-item">
+                        <span>Рефералов</span>
+                        <strong id="stat-referrals">0</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Достижений</span>
+                        <strong id="stat-achievements">0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>🎁 Ежедневный бонус</h3>
+                <p>Получайте <strong>100💎</strong> каждый день!</p>
+                <button class="daily-bonus-btn" id="daily-bonus-btn">Получить бонус</button>
+                <p id="daily-bonus-timer" style="color: #aaa; margin-top: 10px;">⏳ Следующий бонус через: 23:59:59</p>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-history">
+            <h3>📜 История открытий</h3>
+            <div id="history-list" class="history-list">
+                <p style="color: #aaa; text-align: center;">Нет истории — откройте первый кейс!</p>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-referrals">
+            <h3>🤝 Реферальная система</h3>
+            <p>Приглашайте друзей — получайте <strong>10% от их пополнений</strong>!</p>
+            <div class="referral-box">
+                <input type="text" id="ref-link" value="https://giftdrop.ru?ref=-----" readonly>
+                <button class="copy-btn" onclick="copyToClipboard('#ref-link')">Копировать</button>
+            </div>
+            <div class="referral-stats">
+                <p>Привлечено: <strong id="ref-count">0</strong> пользователей</p>
+                <p>Заработано: <strong id="ref-earnings">0</strong> 💎</p>
+            </div>
+            <div class="referral-list" id="referral-list">
+                <p style="color: #aaa; text-align: center;">Пока нет приглашённых</p>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-achievements">
+            <h3>🏆 Достижения</h3>
+            <div class="achievements-grid" id="achievements-grid">
+                <!-- Заполняется JS -->
+            </div>
+            <p style="color: #aaa; margin-top: 20px; text-align: center;">Получите все — и станьте легендой!</p>
+        </div>
+
+        <div class="tab-content" id="tab-settings">
+            <h3>⚙️ Настройки</h3>
+            <div class="setting-item">
+                <label>Уведомления</label>
+                <label class="switch">
+                    <input type="checkbox" id="notifications-toggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <label>Темная тема</label>
+                <label class="switch">
+                    <input type="checkbox" id="dark-theme-toggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button class="logout-btn" onclick="logout()">Выйти</button>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <div class="nav-item" onclick="window.location.href='/'">
+            <div class="nav-icon">🎁</div>
+            <div class="nav-text">Cases</div>
+        </div>
+        <div class="nav-item" onclick="window.location.href='/games.html'">
+            <div class="nav-icon">🎮</div>
+            <div class="nav-text">Games</div>
+        </div>
+        <div class="nav-item active">
+            <div class="nav-icon">👤</div>
+            <div class="nav-text">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        // Загрузка данных пользователя
+        const user = JSON.parse(localStorage.getItem('giftdrop_user') || '{}');
+        const balance = parseInt(localStorage.getItem('giftdrop_balance') || '0');
+        const history = JSON.parse(localStorage.getItem('giftdrop_history') || '[]');
+        const referrals = JSON.parse(localStorage.getItem('giftdrop_referrals') || '[]');
+        const achievements = JSON.parse(localStorage.getItem('giftdrop_achievements') || '[]');
+        const dailyBonus = localStorage.getItem('giftdrop_daily_bonus') || null;
+
+        // Инициализация
+        if (!user.id) {
+            window.location.href = '/'; // Если не авторизован — на главную
+        }
+
+        document.getElementById('profile-username').textContent = user.username || 'Аноним';
+        document.getElementById('ref-code').textContent = user.ref_code || '-----';
+        document.getElementById('profile-balance').textContent = balance;
+
+        // Обновление статистики
+        document.getElementById('stat-opened').textContent = history.length;
+        document.getElementById('stat-won').textContent = history.reduce((sum, h) => sum + h.value, 0);
+        document.getElementById('ref-count').textContent = referrals.length;
+        document.getElementById('ref-earnings').textContent = referrals.reduce((sum, r) => sum + r.earnings, 0);
+        document.getElementById('stat-referrals').textContent = referrals.length;
+        document.getElementById('stat-achievements').textContent = achievements.length;
+
+        // Реферальная ссылка
+        document.getElementById('ref-link').value = `https://giftdrop.ru?ref=${user.ref_code}`;
+
+        // Загрузка достижений
+        const achievementsData = [
+            { id: 'open10', name: 'Новичок', desc: 'Открыл 10 кейсов', icon: '🎖️', achieved: false },
+            { id: 'open50', name: 'Энтузиаст', desc: 'Открыл 50 кейсов', icon: '🔥', achieved: false },
+            { id: 'open100', name: 'Профи', desc: 'Открыл 100 кейсов', icon: '🏆', achieved: false },
+            { id: 'win1000', name: 'Богач', desc: 'Выиграл 1000💎', icon: '💎', achieved: false },
+            { id: 'ref1', name: 'Пригласил', desc: 'Пригласил 1 друга', icon: '🤝', achieved: false },
+            { id: 'ref5', name: 'Тимлид', desc: 'Пригласил 5 друзей', icon: '👥', achieved: false },
+            { id: 'daily7', name: 'Постоялец', desc: 'Получал бонус 7 дней подряд', icon: '📅', achieved: false },
+            { id: 'all', name: 'Легенда', desc: 'Получил все достижения', icon: '✨', achieved: false }
+        ];
+
+        const achievementsGrid = document.getElementById('achievements-grid');
+        achievementsData.forEach(a => {
+            a.achieved = achievements.includes(a.id);
+            const el = document.createElement('div');
+            el.className = 'achievement-item';
+            el.innerHTML = `
+                <div class="achievement-icon">${a.icon}</div>
+                <div class="achievement-info">
+                    <strong>${a.name}</strong>
+                    <small>${a.desc}</small>
+                </div>
+                <div class="achievement-badge ${a.achieved ? 'achieved' : ''}">
+                    ${a.achieved ? '✔️' : '🔒'}
+                </div>
+            `;
+            achievementsGrid.appendChild(el);
+        });
+
+        // Ежедневный бонус
+        const dailyBonusBtn = document.getElementById('daily-bonus-btn');
+        const dailyBonusTimer = document.getElementById('daily-bonus-timer');
+
+        function updateDailyBonusTimer() {
+            if (!dailyBonus) {
+                dailyBonusBtn.disabled = false;
+                dailyBonusBtn.textContent = 'Получить бонус';
+                dailyBonusTimer.textContent = '⏳ Следующий бонус через: 23:59:59';
+                return;
+            }
+
+            const last = new Date(dailyBonus);
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+
+            const diffMs = tomorrow - now;
+            const hours = Math.floor(diffMs / 3600000);
+            const minutes = Math.floor((diffMs % 3600000) / 60000);
+            const seconds = Math.floor((diffMs % 60000) / 1000);
+
+            dailyBonusTimer.textContent = `⏳ Следующий бонус через: ${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+            dailyBonusBtn.disabled = true;
+            dailyBonusBtn.textContent = 'Бонус уже получен!';
+        }
+
+        updateDailyBonusTimer();
+        setInterval(updateDailyBonusTimer, 1000);
+
+        dailyBonusBtn.addEventListener('click', () => {
+            if (dailyBonus) return;
+            const now = new Date().toISOString();
+            localStorage.setItem('giftdrop_daily_bonus', now);
+            balance += 100;
+            localStorage.setItem('giftdrop_balance', balance);
+            document.getElementById('profile-balance').textContent = balance;
+            document.getElementById('stat-won').textContent = parseInt(document.getElementById('stat-won').textContent) + 100;
+            achievements.push('daily7');
+            localStorage.setItem('giftdrop_achievements', JSON.stringify([...new Set(achievements)]));
+            alert('🎉 Вы получили 100💎 за ежедневный бонус!');
+            updateDailyBonusTimer();
+        });
+
+        // История открытий
+        const historyList = document.getElementById('history-list');
+        if (history.length > 0) {
+            historyList.innerHTML = '';
+            history.slice(-15).reverse().forEach(h => {
+                const el = document.createElement('div');
+                el.className = 'history-item';
+                el.innerHTML = `
+                    <span class="history-time">${new Date(h.time).toLocaleTimeString()}</span>
+                    <span class="history-case">${h.case}</span>
+                    <span class="history-value">+${h.value}💎</span>
+                `;
+                historyList.appendChild(el);
+            });
+        }
+
+        // Вкладки
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+            });
+        });
+
+        // Копирование реферальной ссылки
+        function copyToClipboard(selector) {
+            const el = document.querySelector(selector);
+            el.select();
+            document.execCommand('copy');
+            alert('🔗 Ссылка скопирована!');
+        }
+
+        // Настройки
+        document.getElementById('notifications-toggle').addEventListener('change', (e) => {
+            localStorage.setItem('giftdrop_notifications', e.target.checked);
+        });
+
+        document.getElementById('dark-theme-toggle').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+            localStorage.setItem('giftdrop_dark_theme', e.target.checked);
+        });
+
+        // Проверка темы
+        if (localStorage.getItem('giftdrop_dark_theme') === 'true') {
+            document.body.classList.add('dark-theme');
+        }
+
+        // Выход
+        function logout() {
+            localStorage.removeItem('giftdrop_user');
+            localStorage.removeItem('giftdrop_balance');
+            localStorage.removeItem('giftdrop_history');
+            localStorage.removeItem('giftdrop_referrals');
+            localStorage.removeItem('giftdrop_achievements');
+            localStorage.removeItem('giftdrop_daily_bonus');
+            window.location.href = '/';
+        }
+
+        // Подключение LIVE-дропов
+        const eventSource = new EventSource('/api/live-drops.php');
+        eventSource.onmessage = function(e) {
+            const drop = JSON.parse(e.data);
+            const liveList = document.getElementById('live-drops-list');
+            if (liveList) {
+                const dropElement = document.createElement('div');
+                dropElement.className = 'live-drop';
+                dropElement.innerHTML = `
+                    <strong>${drop.user}</strong> открыл <strong>${drop.case}</strong> и выиграл <strong>${drop.item}</strong> (${drop.value}$)
+                `;
+                liveList.insertBefore(dropElement, liveList.firstChild);
+                if (liveList.children.length > 10) liveList.removeChild(liveList.lastChild);
+            }
+        };
+        eventSource.onerror = function() {
+            if (document.getElementById('live-drops-list')) {
+                document.getElementById('live-drops-list').innerHTML = 
+                    '<div class="live-drop">❌ Ошибка соединения с сервером</div>';
+            }
+        };
+    </script>
+</body>
+</html>

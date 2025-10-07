@@ -1,0 +1,73 @@
+<?php
+require_once 'config.php';
+
+if (!isset($_GET['name'])) {
+    header('Location: /');
+    exit;
+}
+
+$caseName = $_GET['name'];
+
+$stmt = $pdo->prepare("SELECT * FROM cases WHERE name = ?");
+$stmt->execute([$caseName]);
+$case = $stmt->fetch();
+
+if (!$case) {
+    header('Location: /');
+    exit;
+}
+
+// Получаем предметы
+$stmt = $pdo->prepare("SELECT * FROM case_items WHERE case_name = ? ORDER BY chance DESC");
+$stmt->execute([$caseName]);
+$items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Генерируем рандомный предмет по процентам
+$r = mt_rand(1, 10000) / 100;
+$winItem = null;
+foreach ($items as $item) {
+    if ($r <= $item['chance']) {
+        $winItem = $item;
+        break;
+    }
+    $r -= $item['chance'];
+}
+
+if (!$winItem) $winItem = $items[0];
+
+// Получаем пользователя
+$user = isset($_SESSION['user']) ? $_SESSION['user'] : null;
+if (!$user) {
+    header('Location: /');
+    exit;
+}
+
+// Начисляем баланс
+$balance = $case['reward_base'];
+if ($winItem['rarity'] === 'Редкий') $balance *= 2;
+if ($winItem['rarity'] === 'Эпический') $balance *= 5;
+if ($winItem['rarity'] === 'Легендарный') $balance *= 10;
+
+// Сохраняем историю
+$stmt = $pdo->prepare("INSERT INTO case_history (user_id, case_name, item_name, rarity, value) VALUES (?, ?, ?, ?, ?)");
+$stmt->execute([
+    $user['id'],
+    $case['name'],
+    $winItem['item_name'],
+    $winItem['rarity'],
+    $balance
+]);
+
+// Обновляем баланс
+$stmt = $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?");
+$stmt->execute([$balance, $user['id']]);
+
+// Сохраняем в сессию для отображения
+$_SESSION['last_win'] = [
+    'item' => $winItem['item_name'],
+    'value' => $balance,
+    'icon' => $winItem['icon']
+];
+
+header('Location: /case-result.html');
+exit;
